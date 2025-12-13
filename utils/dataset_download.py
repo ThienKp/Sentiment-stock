@@ -1,8 +1,7 @@
-import os
 import csv
 import argparse
 from datasets import load_dataset
-from utils.config import DATASET_DIR, ensure_dataset_dir
+from utils.config import DATASET_DIR, ensure_dataset_dir, get_dataset_path
 from utils.logging_config import setup_logger
 
 logger = setup_logger(__name__)
@@ -35,7 +34,7 @@ def main(args: argparse.Namespace) -> None :
     test_data = test_data.map(label_process)
     
     ensure_dataset_dir()
-    with open(os.path.join(DATASET_DIR, args.train_name + ".csv"), 'w', newline='') as csvfile:
+    with open(get_dataset_path(args.train_name + ".csv"), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=["id"] + train_data.column_names)
 
         writer.writeheader()
@@ -45,7 +44,7 @@ def main(args: argparse.Namespace) -> None :
     if args.verbose:
         logger.info(f"Successfully save the train dataset to {DATASET_DIR}")
 
-    with open(os.path.join(DATASET_DIR, args.test_name + ".csv"), 'w', newline='') as csvfile:
+    with open(get_dataset_path(args.test_name + ".csv"), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=["id"] + test_data.column_names)
 
         writer.writeheader()

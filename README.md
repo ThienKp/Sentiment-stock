@@ -5,5 +5,5 @@ This repository is about LLM-based sentiment analysis on tweets to compare and p
 Download financial tweets dataset from https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment
 
 ```bash
-python -m utils.dataset_download.financial_tweets --verbose
+python -m utils.dataset_download --verbose
 ```
