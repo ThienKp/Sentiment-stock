@@ -1,22 +1,20 @@
 import csv
 import argparse
+from tqdm import tqdm
 from datasets import load_dataset
 from utils.config import DATASET_DIR, ensure_dataset_dir, get_dataset_path
+from utils.preprocess import text_process
 from utils.logging_config import setup_logger
 
 logger = setup_logger(__name__)
 
+# Editable Variable
 DATA_NAME: str = "zeroshot/twitter-financial-news-sentiment"
 
 def label_process(data: dict) -> dict :
-    new_label = None
-    if data["label"] == 0:
-        new_label = "negative"
-    elif data["label"] == 1:
-        new_label = "positive"
-    else:
-        new_label = "neutral"
-    data["label"] = new_label
+    data["text"] = text_process(data["text"])
+    new_label = ["negative", "positive", "neutral"]
+    data["label"] = new_label[data["label"]]
     return data
 
 def main(args: argparse.Namespace) -> None :
@@ -30,15 +28,15 @@ def main(args: argparse.Namespace) -> None :
         logger.info(f"Finish downloaded train data from {DATA_NAME}:")
         logger.info(f"There are {test_data.num_rows} entries with features {test_data.features}")
 
-    train_data = train_data.map(label_process)
-    test_data = test_data.map(label_process)
+    train_data = train_data.map(label_process, desc="train data processing")
+    test_data = test_data.map(label_process, desc="test data processing")
     
     ensure_dataset_dir()
     with open(get_dataset_path(args.train_name + ".csv"), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=["id"] + train_data.column_names)
 
         writer.writeheader()
-        for idx, data in enumerate(train_data):
+        for idx, data in enumerate(tqdm(train_data, desc="train data saving")):
             begin = {"id": idx}
             writer.writerow({**begin, **data})
     if args.verbose:
@@ -48,7 +46,7 @@ def main(args: argparse.Namespace) -> None :
         writer = csv.DictWriter(csvfile, fieldnames=["id"] + test_data.column_names)
 
         writer.writeheader()
-        for idx, data in enumerate(test_data):
+        for idx, data in enumerate(tqdm(test_data, desc="test data saving")):
             begin = {"id": idx}
             writer.writerow({**begin, **data})
     if args.verbose:

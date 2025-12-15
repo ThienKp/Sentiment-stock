@@ -2,5 +2,8 @@ __pycache__
 dataset
 logs
 CSE_note.txt
-submit.sh
+submit*.sh
 test.py
+model_result
+state_history
+local_model
