@@ -1,4 +1,4 @@
-# Sentiment-stock
+# FinTune-sentiment
 This repository is about fine-tuning financial-specific and tweet-specific pretrained models on financial tweets to compare against another model pretrained solely on financial tweets.
 
 ## Financial tweets dataset
